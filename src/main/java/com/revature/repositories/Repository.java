@@ -1,6 +1,5 @@
 package com.revature.repositories;
 
-import com.revature.exceptions.MissingAnnotationException;
 import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
@@ -16,20 +15,22 @@ import java.util.List;
 // Repository must be inherited by models
 public class Repository<T> {
 
+	StatementCreator<Object> sc = new StatementCreator<>();
+
 	Connection conn = ConnectionFactory.getConnection();
 	private List<Object> data = new LinkedList<>();
 
 	public Repository() {}
 
 	// INITIALIZE TABLE
-	public void initializeTable() throws SQLException, MissingAnnotationException {
-		StatementCreator<Object> sc = new StatementCreator<>();
-		String sql = sc.buildInitialTable(this);
-		//Connection conn = repo.getConn();
-
-		PreparedStatement ps = conn.prepareStatement(sql);
-		ps.executeUpdate();
-	}
+//	public void initializeTable() throws SQLException, MissingAnnotationException {
+//		StatementCreator<Object> sc = new StatementCreator<>();
+//		String sql = sc.buildInitialTable(this);
+//		//Connection conn = repo.getConn();
+//
+//		PreparedStatement ps = conn.prepareStatement(sql);
+//		ps.executeUpdate();
+//	}
 
 	// should this be Object or T ???
 	public Object addItem(Object o) {
@@ -42,7 +43,7 @@ public class Repository<T> {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Object[] fieldValues = ReflectInfo.getFieldValues(o);
 
-			for (int i=0; i < ReflectInfo.getFieldLength(o); i++){
+			for (int i=0; i < ReflectInfo.getFieldLength(o) - 1; i++){
 				//System.out.println( fieldValues[i] +":\t"+  fieldValues[i].getClass().getSimpleName() );
 				ps.setObject(i+1, fieldValues[i]);
 			}
