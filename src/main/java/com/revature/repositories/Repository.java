@@ -5,33 +5,32 @@ import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.*;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 // Repository must be inherited by models
 public class Repository {
 
-	StatementCreator<Object> sc = new StatementCreator<>();
+	Connection conn;// = ConnectionFactory.getConnection();
 
-	Connection conn = ConnectionFactory.getConnection();
-	private List<Object> data = new LinkedList<>();
-
-	public Repository() {}
-
-
-
-
-
+	public Repository() {
+		this.conn = ConnectionFactory.getConnection();
+	}
+	
+	
 	// INITIALIZE TABLE
 	public void initializeTable(Object o) throws SQLException, MissingAnnotationException {
+		PreparedStatement drop = conn.prepareStatement("drop table if exists " +ReflectInfo.getTableName(o)+ ";");
+		drop.executeUpdate();
+		
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.buildInitialTable(o);
-		//Connection conn = repo.getConn();
 
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.executeUpdate();
@@ -55,7 +54,7 @@ public class Repository {
 			//ps.setString(1, entity.getName());
 			ResultSet rs = ps.executeQuery();
 
-			if (rs.next()) return buildItem(rs);
+			if (rs.next()) return buildItem(rs, o);
 		}
 		catch (SQLException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -63,9 +62,9 @@ public class Repository {
 		return null;
 	}
 
-	public Object getItem(int id) {
+	public Object getItem(int id,Object o) {
 		StatementCreator<Object> sc = new StatementCreator<>();
-		String sql = sc.read(this);
+		String sql = sc.read(o);
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -73,7 +72,7 @@ public class Repository {
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next()) {
-				return buildItem(rs);
+				return buildItem(rs, o);
 			}
 
 		} catch (
@@ -89,44 +88,54 @@ public class Repository {
 	* Fixme -	Return List<Object> ?
 	* Fixme -
 	*/
-	public List<Object> getAll(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+	// <? extends Connection> OR <? extends Repository>
+	public Object getAll(Object o, Connection c) throws InstantiationException, IllegalAccessException {
 
-		Object obj = clazz.newInstance();	//
+		//Object obj = clazz.newInstance();	//
 
 		StatementCreator<Object> sc = new StatementCreator<>();
-		String sql = sc.readAll(this);
+		
+		// POSSIBLY PASSING IN WRONG INSTANCE/VALUE. RS.NEXT() NOT LOOPING
+		String sql = sc.readAll(o);
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
-			int colCount = rs.getMetaData().getColumnCount();
-//			System.out.println(rs.getMetaData().getColumnCount());
-
-			int numFields = clazz.getDeclaredFields().length;
-
+			ResultSetMetaData md = rs.getMetaData();
+			int colCount = md.getColumnCount();
+			
+			Class[] params = new Class[colCount];
+			List<Object> data = new LinkedList<>();
+			//int numFields = clazz.getDeclaredFields().length;
+			
 			while (rs.next()) {
-				//data.add(buildItem(rs));
-
-
 				for (int i = 1; i <= colCount; i++) {
-					data.add( rs.getObject(i) );
+					params[i-1] =  rs.getObject(i).getClass() ; // class java.lang.Integer ...
+					
+					data.add(  rs.getObject(i)  );
+					
 				}
+				// need to convert params to primitive type classes
+				//System.out.println(Arrays.toString(params));
+				Constructor<?> constructor = o.getClass().getConstructor( params );
+				return constructor.newInstance(data.toArray());
+				//data.add(buildItem(rs, c));
 			}
 			//System.out.println("data:\t" + data );
 
-			return data;
+			//return data;
 
 		} catch (
-				SQLException e) {
+				SQLException | InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public void deleteItem(int id) {
+	public void deleteItem(int id, Object o) {
 		StatementCreator<Object> sc = new StatementCreator<>();
 		// since Entity now inherits Repository, 'this' refers to Entity class
-		String sql = sc.delete(this);
+		String sql = sc.delete(o);
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
@@ -146,20 +155,20 @@ public class Repository {
 		return this.getClass().getTypeName();
 	}
 
-	private Object buildItem(ResultSet rs) throws SQLException, IllegalAccessException {
+	private Object buildItem(ResultSet rs, Object o) throws SQLException, IllegalAccessException {
 
 		// should this be an instance of Repo instead of Object?
-		Field[] fields = this.getClass().getDeclaredFields();
+		Field[] fields = o.getClass().getDeclaredFields();
 		Object ob = new Object();
-		ob = this;
 
 		for (Field f : fields) {
 			f.setAccessible(true);
 			// (object whose field should be modified, new value for the field of obj being modified)
-			f.set(this, rs.getObject(f.getName()));
+			f.set(o, rs.getObject(f.getName()));
 			f.setAccessible(false);
 		}
 
-		return ob;
+		return o;
 	}
+	
 }

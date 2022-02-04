@@ -14,7 +14,8 @@ public class testing {
 	
 	public static void main(String[] args) throws ResourceNotFoundException {
 		
-		// Entity now inherits Repository
+		// Entity no longer inherits Repository
+		Repository repo = new Repository();
 		
 		Entity entity = new Entity();
 		entity.setId(1);
@@ -23,26 +24,30 @@ public class testing {
 		entity.setOtherNum(11);
 		
 		try {
-			entity.initializeTable(entity);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (MissingAnnotationException e) {
+			repo.initializeTable(entity);
+		} catch (SQLException | MissingAnnotationException e) {
 			e.printStackTrace();
 		}
-		/*
-		entity.addItem(entity);
+		
+		repo.addItem(entity);
 		
 		entity.setId(2);
 		entity.setName("name2");
 		entity.setSomeNum(2.2);
 		entity.setOtherNum(22);
-		entity.addItem(entity);
+		repo.addItem(entity);
 		
-		//System.out.println("get 1:\t"+ entity.getItem(1) +"\n");
-		System.out.println("getall:\t"+ entity.getAll() );
-		entity.deleteItem(1);
-		entity.deleteItem(2);
-		*/
+		//System.out.println("get 1:\t"+ repo.getItem(1, entity) +"\n");
+		try {
+			System.out.println("getAll:\t"+ repo.getAll( entity, ConnectionFactory.getConnection() ));
+		} catch (InstantiationException | IllegalAccessException | NullPointerException e) {
+			e.printStackTrace();
+		} finally {
+			repo.deleteItem(1, entity);
+			repo.deleteItem(2, entity);
+		}
+		
+		
 		
 		// tests for Repository class. works for adding things to postgres
 		//Repository<Entity> repo = new Repository();

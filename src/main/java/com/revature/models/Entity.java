@@ -7,7 +7,7 @@ import com.revature.util.SqlDataType;
 
 
 @Table(tableName = "entity")
-public class Entity extends Repository {
+public class Entity {
 	
 	@Column(name = "id", type = SqlDataType.INTEGER)
 	private int id;
@@ -15,10 +15,8 @@ public class Entity extends Repository {
 	private String name;
 	@Column(name = "some_num", type = SqlDataType.DOUBLE)
 	private double some_num;
-	//private double someNum;
 	@Column(name = "other_num", type = SqlDataType.INTEGER)
 	private int other_num;
-	//private int otherNum;
 	
 	public Entity() {}
 	
@@ -27,8 +25,12 @@ public class Entity extends Repository {
 		this.name = name;
 		this.some_num = someNum;
 		this.other_num = otherNum;
-		//this.someNum = someNum;
-		//this.otherNum = otherNum;
+	}
+	public Entity(Integer id, String name, Double someNum, Integer otherNum) {
+		this.id = id;
+		this.name = name;
+		this.some_num = someNum;
+		this.other_num = otherNum;
 	}
 	
 	public int getId() {
@@ -49,22 +51,18 @@ public class Entity extends Repository {
 	
 	public double getSomeNum() {
 		return some_num;
-		//return someNum;
 	}
 	
 	public void setSomeNum(double someNum) {
 		this.some_num = someNum;
-		//this.someNum = someNum;
 	}
 	
 	public int getOtherNum() {
 		return other_num;
-		//return otherNum;
 	}
 	
 	public void setOtherNum(int otherNum) {
 		this.other_num = otherNum;
-		//this.otherNum = otherNum;
 	}
 	
 	@Override

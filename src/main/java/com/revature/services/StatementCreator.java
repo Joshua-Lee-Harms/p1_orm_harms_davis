@@ -48,8 +48,8 @@ public class StatementCreator<T> {
 				type = f.getAnnotation(Column.class).type().toString();
 				//System.out.println("pk:\t"+pk);System.out.println("col:\t"+colName);System.out.println("type:\t"+type);
 				
-				// NOT ACCESSING BELOW IF STATEMENTS
-				if (type.equals( SqlDataType.VARCHAR.toString() )) columnString = " " +colName+ " " +type+ "(20), ";
+				//ADD OTHER TYPES
+				if (type.equals("VARCHAR")) columnString = " " +colName+ " " +type+ "(20), ";
 				else if (type.equals("DOUBLE")) columnString = colName+ " " +type+ " precision, ";
 				else if (type.equals("INTEGER")) columnString = colName+ " " +type+ ", ";
 				cols.add(columnString);
@@ -68,8 +68,10 @@ public class StatementCreator<T> {
 		}
 		String createTableSql = "create table if not exists " +tableName+ " ( ";
 		
-		for (String c : cols){
-			createTableSql += c;
+		//for (String c : cols){
+		for (int i=0; i<cols.size(); i++ ){
+			if (i==0) createTableSql += cols.get(i).split(" ")[0] + " serial primary key, ";
+			else { createTableSql += cols.get(i); }
 		}
 		for (String fk: foreignKey){
 			createTableSql += fk;
