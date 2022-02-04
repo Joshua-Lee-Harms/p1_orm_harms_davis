@@ -1,13 +1,18 @@
 package com.revature.services;
 
 import com.revature.annotations.Column;
+import com.revature.annotations.ForeignKey;
 import com.revature.annotations.Table;
+import com.revature.exceptions.MissingAnnotationException;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
+import com.revature.util.SqlDataType;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class StatementCreator<T> {
 	
@@ -147,10 +152,6 @@ public class StatementCreator<T> {
 	}
 	
 	public String update(T object){
-		return "";
-	}
-
-	public String buildInitialTable(T tRepository) {
 		return "";
 	}
 }
