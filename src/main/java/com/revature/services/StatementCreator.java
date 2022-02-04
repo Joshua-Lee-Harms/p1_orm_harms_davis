@@ -17,44 +17,38 @@ public class StatementCreator<T> {
 	private T object;
 	private String tableName;
 	private String statement;
-	
+
 	public StatementCreator(){}
 
-	public void buildTable(Object o) {
+	public void buildTable(Object o) {}
 
-
-
-	}
-
-
-	// CREATE TABLE METHOD ???
-	// UPDATE METHOD
 	
 	public String create(T object){
 		this.object = object;
 		tableName = ReflectInfo.getTableName(object);
-		
-		int fieldLength = ReflectInfo.getFieldLength(object);
+
+		int flength = ReflectInfo.getFieldLength(object);
 		Field[] fields;
-		String[] colNames = new String[fieldLength];
+		String[] colNames = new String[flength];
 		fields = object.getClass().getDeclaredFields();
 		
-		for (int i= 0; i < fieldLength; i++) {
+		for (int i = 0; i < flength; i++) {
 			fields[i].setAccessible(true);
 			colNames[i] = fields[i].getAnnotation(Column.class).name();
 		}
 		
 		StringBuilder cols = new StringBuilder();
 		StringBuilder vals = new StringBuilder();
-		
-		for (int i=0; i<fieldLength; i++){
+
+
+		for (int i = 1; i< flength; i++){
 			cols.append(colNames[i]).append(",");
 			vals.append("?,");
 		}
 		vals = new StringBuilder(vals.substring(0, vals.length()-1));
 		
 		statement = "insert into "+ tableName+ " ("+ cols.substring(0, cols.length()-1)
-					+") "+ "values ("+ vals + ") returning *;";
+					+") "+ "values ( default,"+ vals + ") returning *;";
 		
 		return statement;
 	}

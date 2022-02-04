@@ -30,7 +30,7 @@ public class ReflectInfo {
 		Field[] fields = o.getClass().getDeclaredFields();
 		Object[] fieldValues = new Object[getFieldLength(o)];
 		
-		for (int i=0; i<getFieldLength(o); i++){
+		for (int i=0; i< getFieldLength(o); i++){
 			fields[i].setAccessible(true);
 			
 			fieldValues[i] = fields[i].get(o);
