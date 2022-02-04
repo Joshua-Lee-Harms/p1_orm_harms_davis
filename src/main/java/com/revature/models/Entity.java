@@ -3,19 +3,20 @@ package com.revature.models;
 import com.revature.annotations.Column;
 import com.revature.annotations.Table;
 import com.revature.repositories.Repository;
+import com.revature.util.SqlDataType;
 
 
 @Table(tableName = "entity")
 public class Entity extends Repository {
 	
-	@Column(name = "id")
+	@Column(name = "id", type = SqlDataType.INTEGER)
 	private int id;
-	@Column(name = "name")
+	@Column(name = "name", type = SqlDataType.VARCHAR)
 	private String name;
-	@Column(name = "some_num")
+	@Column(name = "some_num", type = SqlDataType.DOUBLE)
 	private double some_num;
 	//private double someNum;
-	@Column(name = "other_num")
+	@Column(name = "other_num", type = SqlDataType.INTEGER)
 	private int other_num;
 	//private int otherNum;
 	

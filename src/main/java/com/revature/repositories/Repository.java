@@ -22,9 +22,9 @@ public class Repository<T> {
 	public Repository() {}
 
 	// INITIALIZE TABLE
-	public void initializeTable() throws SQLException, MissingAnnotationException {
+	public void initializeTable(Object o) throws SQLException, MissingAnnotationException {
 		StatementCreator<Object> sc = new StatementCreator<>();
-		String sql = sc.buildInitialTable(this);
+		String sql = sc.buildInitialTable(o);
 		//Connection conn = repo.getConn();
 
 		PreparedStatement ps = conn.prepareStatement(sql);
@@ -41,10 +41,10 @@ public class Repository<T> {
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Object[] fieldValues = ReflectInfo.getFieldValues(o);
-
-			for (int i=0; i < ReflectInfo.getFieldLength(o); i++){
-				//System.out.println( fieldValues[i] +":\t"+  fieldValues[i].getClass().getSimpleName() );
-				ps.setObject(i+1, fieldValues[i]);
+			
+			for (int i=0; i < ReflectInfo.getFieldLength(o)-1; i++){
+				//System.out.println( fieldValues[i+1] +":\t"+  fieldValues[i+1].getClass().getSimpleName() );
+				ps.setObject(i+1, fieldValues[i+1]);
 			}
 			//ps.setString(1, entity.getName());
 			ResultSet rs = ps.executeQuery();
@@ -86,18 +86,17 @@ public class Repository<T> {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			int colCount = rs.getMetaData().getColumnCount();
-
+			
 			while (rs.next()) {
 				//data.add(buildItem(rs));
-				for (int i = 1; i < colCount; i++) {
+				for (int i = 1; i <= colCount; i++) {
 					data.add( rs.getObject(i) );
 				}
 			}
 			//System.out.println("data:\t" + data );
 			return data;
 
-		} catch (
-				SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
