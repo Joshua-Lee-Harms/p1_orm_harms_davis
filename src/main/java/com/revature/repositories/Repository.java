@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 // Repository must be inherited by models
-public class Repository<T> {
+public class Repository {
 
 	StatementCreator<Object> sc = new StatementCreator<>();
 
@@ -21,6 +21,10 @@ public class Repository<T> {
 	private List<Object> data = new LinkedList<>();
 
 	public Repository() {}
+
+
+
+
 
 	// INITIALIZE TABLE
 //	public void initializeTable() throws SQLException, MissingAnnotationException {
@@ -45,7 +49,7 @@ public class Repository<T> {
 
 			for (int i=0; i < ReflectInfo.getFieldLength(o) - 1; i++){
 				//System.out.println( fieldValues[i] +":\t"+  fieldValues[i].getClass().getSimpleName() );
-				ps.setObject(i+1, fieldValues[i]);
+				ps.setObject(i+1, fieldValues[i+1]);
 			}
 			//ps.setString(1, entity.getName());
 			ResultSet rs = ps.executeQuery();
@@ -78,7 +82,15 @@ public class Repository<T> {
 		return null;
 	}
 
-	public Object getAll() {
+	/*Fixme - Must Return List of the Class type passed in, should be a way to pass enough info in through the param
+	* Fixme - via reflection to reconstruct a list of concrete objects from the stream of column data
+	* Fixme -
+	* Fixme -	Return List<Object> ?
+	* Fixme -
+	*/
+	public List<Object> getAll(Class<?> clazz) throws InstantiationException, IllegalAccessException {
+
+		Object obj = clazz.newInstance();	//
 
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.readAll(this);
@@ -87,14 +99,20 @@ public class Repository<T> {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			int colCount = rs.getMetaData().getColumnCount();
+//			System.out.println(rs.getMetaData().getColumnCount());
+
+			int numFields = clazz.getDeclaredFields().length;
 
 			while (rs.next()) {
 				//data.add(buildItem(rs));
-				for (int i = 1; i < colCount; i++) {
+
+
+				for (int i = 1; i <= colCount; i++) {
 					data.add( rs.getObject(i) );
 				}
 			}
 			//System.out.println("data:\t" + data );
+
 			return data;
 
 		} catch (
@@ -121,7 +139,12 @@ public class Repository<T> {
 		}
 	}
 
-	// Helper Method
+	// Helper Methods
+
+	public String getObjectType() {
+		return this.getClass().getTypeName();
+	}
+
 	private Object buildItem(ResultSet rs) throws SQLException, IllegalAccessException {
 
 		// should this be an instance of Repo instead of Object?
