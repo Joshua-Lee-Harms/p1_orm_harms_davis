@@ -1,5 +1,6 @@
 package com.revature.repositories;
 
+import com.revature.exceptions.MissingAnnotationException;
 import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
@@ -27,14 +28,14 @@ public class Repository {
 
 
 	// INITIALIZE TABLE
-//	public void initializeTable() throws SQLException, MissingAnnotationException {
-//		StatementCreator<Object> sc = new StatementCreator<>();
-//		String sql = sc.buildInitialTable(this);
-//		//Connection conn = repo.getConn();
-//
-//		PreparedStatement ps = conn.prepareStatement(sql);
-//		ps.executeUpdate();
-//	}
+	public void initializeTable() throws SQLException, MissingAnnotationException {
+		StatementCreator<Object> sc = new StatementCreator<>();
+		String sql = sc.buildInitialTable(this);
+		//Connection conn = repo.getConn();
+
+		PreparedStatement ps = conn.prepareStatement(sql);
+		ps.executeUpdate();
+	}
 
 	// should this be Object or T ???
 	public Object addItem(Object o) {
