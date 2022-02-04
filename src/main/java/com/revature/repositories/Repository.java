@@ -28,9 +28,9 @@ public class Repository {
 
 
 	// INITIALIZE TABLE
-	public void initializeTable() throws SQLException, MissingAnnotationException {
+	public void initializeTable(Object o) throws SQLException, MissingAnnotationException {
 		StatementCreator<Object> sc = new StatementCreator<>();
-		String sql = sc.buildInitialTable(this);
+		String sql = sc.buildInitialTable(o);
 		//Connection conn = repo.getConn();
 
 		PreparedStatement ps = conn.prepareStatement(sql);

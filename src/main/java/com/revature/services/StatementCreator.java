@@ -77,7 +77,9 @@ public class StatementCreator<T> {
 		//createTableSql += "primary key(" +pk+ "))";
 		createTableSql = createTableSql.substring(0, createTableSql.length()-2);
 		createTableSql += ");";
-		System.out.println(createTableSql);
+		
+		// testing statement
+		// System.out.println(createTableSql);
 		return  createTableSql;
 	}
 	
@@ -95,12 +97,6 @@ public class StatementCreator<T> {
 			fields[i].setAccessible(true);
 			colNames[i] = fields[i].getAnnotation(Column.class).name();
 		}
-		/*
-		// !!!!! TESTING VALUES - DELETE BEFORE SUBMISSION !!!!!!
-		System.out.println("\nTable Name: "+ tableName +"\n");
-		System.out.println("FieldNames:\t"+ Arrays.toString(fieldNames) );
-		System.out.println(Arrays.toString(colNames) );
-		*/
 		
 		StringBuilder cols = new StringBuilder();
 		StringBuilder vals = new StringBuilder();
