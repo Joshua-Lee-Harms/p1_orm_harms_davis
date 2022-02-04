@@ -2,7 +2,6 @@ package com.revature.test;
 
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.models.Entity;
-import com.revature.models.Entity2;
 import com.revature.repositories.Repository;
 import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
