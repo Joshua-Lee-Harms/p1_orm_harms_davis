@@ -8,6 +8,7 @@ import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 
 import java.sql.Connection;
+import java.util.LinkedList;
 
 public class testing {
 	
@@ -15,15 +16,16 @@ public class testing {
 		
 		// Entity now inherits Repository
 		Entity e = new Entity();
-		e.setName("name");
-		e.setSomeNum(1.5);
-		e.setOtherNum(22);
+//		e.setName("name");
+//		e.setSomeNum(1.5);
+//		e.setOtherNum(22);
 
-		Connection conn = ConnectionFactory.getConnection();
 
-//		e.addItem(e);
+		Object e2 = e.getAll();
 
-		e.addItem(e);
+
+		System.out.println(e2.toString());
+
 
 
 

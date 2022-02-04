@@ -40,7 +40,7 @@ public class StatementCreator<T> {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder vals = new StringBuilder();
 
-
+		cols.append(colNames[0]).append(",");
 		for (int i = 1; i< flength; i++){
 			cols.append(colNames[i]).append(",");
 			vals.append("?,");

@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 // Repository must be inherited by models
-public class Repository<T> {
+public class Repository {
 
 	StatementCreator<Object> sc = new StatementCreator<>();
 
@@ -45,7 +45,7 @@ public class Repository<T> {
 
 			for (int i=0; i < ReflectInfo.getFieldLength(o) - 1; i++){
 				//System.out.println( fieldValues[i] +":\t"+  fieldValues[i].getClass().getSimpleName() );
-				ps.setObject(i+1, fieldValues[i]);
+				ps.setObject(i+1, fieldValues[i+1]);
 			}
 			//ps.setString(1, entity.getName());
 			ResultSet rs = ps.executeQuery();
