@@ -68,13 +68,14 @@ public class StatementCreator<T> {
 	}
 	
 	public String read(T object){
+		int numFields = ReflectInfo.getFieldLength(object);
 		this.object = object;
 		tableName = ReflectInfo.getTableName(object);
 		
-		String[] colNames = new String[ReflectInfo.getFieldLength(object)];
+		String[] colNames = new String[numFields];
 		Field[] fields = object.getClass().getDeclaredFields();
 		
-		for (int i= 0; i < ReflectInfo.getFieldLength(object); i++) {
+		for (int i= 0; i < numFields; i++) {
 			fields[i].setAccessible(true);
 			colNames[i] = fields[i].getAnnotation(Column.class).name();
 		}

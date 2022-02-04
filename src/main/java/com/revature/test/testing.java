@@ -9,10 +9,11 @@ import com.revature.util.ConnectionFactory;
 
 import java.sql.Connection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class testing {
 	
-	public static void main(String[] args) throws ResourceNotFoundException {
+	public static void main(String[] args) throws ResourceNotFoundException, InstantiationException, IllegalAccessException {
 		
 		// Entity now inherits Repository
 		Entity e = new Entity();
@@ -21,7 +22,7 @@ public class testing {
 //		e.setOtherNum(22);
 
 
-		Object e2 = e.getAll();
+		 List<Object> list = e.getAll(Entity.class);
 
 
 		System.out.println(e2.toString());
