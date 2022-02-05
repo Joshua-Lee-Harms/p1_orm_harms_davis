@@ -9,14 +9,14 @@ import com.revature.util.ConnectionFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 public class testing {
 	
 	public static void main(String[] args) throws ResourceNotFoundException {
 		
 		// Entity no longer inherits Repository
-		Connection conn = ConnectionFactory.getConnection();
-		Repository repo = new Repository(conn);
+		Repository repo = new Repository();
 		
 		Entity entity = new Entity();
 		entity.setId(1);
@@ -37,12 +37,13 @@ public class testing {
 		e2.setName("name2");
 		e2.setSomeNum(2.2);
 		e2.setOtherNum(22);
-		 repo.addItem(e2);
+		repo.addItem(e2);
 		
 		//System.out.println("get 2:\t"+ repo.getItem(2, entity) +"\n");
 		try {
 			//System.out.println("getAll:\t"+ repo.getAll( entity, ConnectionFactory.getConnection() ));
-			repo.getAll(e2);
+			//System.out.println( repo.getAll(e2) );
+			System.out.println( repo.getAll(entity) );
 			
 		} catch (InstantiationException | IllegalAccessException | NullPointerException e) {
 			e.printStackTrace();
@@ -51,6 +52,8 @@ public class testing {
 			//repo.deleteItem(2, entity);
 		}
 		
+		repo.update(entity, 1, "name", "anthony");
+		repo.update(entity, 1, "other_num", 55) ;
 		// tests for Repository class. works for adding things to postgres
 		//Repository<Entity> repo = new Repository();
 		//repo.addItem(entity);
@@ -60,6 +63,7 @@ public class testing {
 		
 		// tests for StatementCreator class
 		//StatementCreator<Object> sc = new StatementCreator<>();
+		//System.out.println(sc.update(e2, 1, "name", "anthony"));
 		//System.out.println("\nStatement Creator:");
 		// Tests for initialize table method
 		//try { sc.buildInitialTable(entity); }

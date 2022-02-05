@@ -2,7 +2,6 @@ package com.revature.models;
 
 import com.revature.annotations.Column;
 import com.revature.annotations.Table;
-import com.revature.repositories.Repository;
 import com.revature.util.SqlDataType;
 
 

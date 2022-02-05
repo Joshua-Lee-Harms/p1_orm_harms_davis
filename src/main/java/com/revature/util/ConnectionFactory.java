@@ -1,6 +1,5 @@
 package com.revature.util;
 
-import javax.security.auth.login.Configuration;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,7 +8,6 @@ import java.util.Properties;
 
 public class ConnectionFactory {
 	
-	private static ConnectionFactory connectionFactory;
 	private static Properties properties = new Properties();
 	private static Connection connection = null;
 	
@@ -23,12 +21,10 @@ public class ConnectionFactory {
 			e.printStackTrace();
 		}
 		
-		// To establish a new connection if one doesn't exist, otherwise return to current connection
 		if (connection == null) {
-			//establish a new connection. Credentials: url, username, password
+		
 			try {
-				String endpoint = properties.getProperty("endpoint");
-				String url = "jdbc:postgresql://" + endpoint + "/postgres";
+				String url = properties.getProperty("url");
 				String username = properties.getProperty("username");
 				String password = properties.getProperty("password");
 				
@@ -43,7 +39,6 @@ public class ConnectionFactory {
 	
 	public static void closeConnection() throws SQLException {
 		connection.close();
-		connectionFactory = null;
 		System.out.println("Connection has been closed");
 	}
 }

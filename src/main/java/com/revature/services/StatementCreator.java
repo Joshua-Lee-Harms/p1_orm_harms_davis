@@ -4,22 +4,14 @@ import com.revature.annotations.Column;
 import com.revature.annotations.ForeignKey;
 import com.revature.annotations.Table;
 import com.revature.exceptions.MissingAnnotationException;
-import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
-import com.revature.util.SqlDataType;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class StatementCreator<T> {
 	
-	//Connection conn = ConnectionFactory.getConnection();
-	public Class<T> table;
-	private T value;
-	private T object;
 	private String tableName;
 	private String statement;
 	
@@ -46,12 +38,12 @@ public class StatementCreator<T> {
 			if (f.isAnnotationPresent(Column.class)) {
 				colName = f.getName();
 				type = f.getAnnotation(Column.class).type().toString();
-				//System.out.println("pk:\t"+pk);System.out.println("col:\t"+colName);System.out.println("type:\t"+type);
 				
 				//ADD OTHER TYPES
 				if (type.equals("VARCHAR")) columnString = " " +colName+ " " +type+ "(20), ";
 				else if (type.equals("DOUBLE")) columnString = colName+ " " +type+ " precision, ";
 				else if (type.equals("INTEGER")) columnString = colName+ " " +type+ ", ";
+				else if (type.equals("BOOLEAN") || type.equals("BOOL")) columnString = colName+ " " +type+ ", ";
 				cols.add(columnString);
 			} else {
 				throw new MissingAnnotationException(f + " missing annotation @Column");
@@ -68,7 +60,6 @@ public class StatementCreator<T> {
 		}
 		String createTableSql = "create table if not exists " +tableName+ " ( ";
 		
-		//for (String c : cols){
 		for (int i=0; i<cols.size(); i++ ){
 			if (i==0) createTableSql += cols.get(i).split(" ")[0] + " serial primary key, ";
 			else { createTableSql += cols.get(i); }
@@ -76,24 +67,21 @@ public class StatementCreator<T> {
 		for (String fk: foreignKey){
 			createTableSql += fk;
 		}
-		//createTableSql += "primary key(" +pk+ "))";
+		
 		createTableSql = createTableSql.substring(0, createTableSql.length()-2);
 		createTableSql += ");";
 		
-		// testing statement
-		// System.out.println(createTableSql);
 		return  createTableSql;
 	}
 	
 	public String create(T object){
-		//this.object = object;
-		tableName = ReflectInfo.getTableName(object);
 		
+		tableName = ReflectInfo.getTableName(object);
 		int fieldLength = ReflectInfo.getFieldLength(object);
+		
 		Field[] fields;
-		//String[] fieldNames = ReflectInfo.getFieldNames(object);
-		String[] colNames = new String[fieldLength];
 		fields = object.getClass().getDeclaredFields();
+		String[] colNames = new String[fieldLength];
 		
 		for (int i= 0; i < fieldLength; i++) {
 			fields[i].setAccessible(true);
@@ -131,7 +119,6 @@ public class StatementCreator<T> {
 	}
 	
 	public String read(T object){
-		//this.object = object;
 		tableName = ReflectInfo.getTableName(object);
 		
 		String[] colNames = new String[ReflectInfo.getFieldLength(object)];
@@ -148,16 +135,31 @@ public class StatementCreator<T> {
 	}
 	
 	public String readAll(T object){
-		//this.object = object;
 		tableName = ReflectInfo.getTableName(object);
-		
 		statement = "select * from " + tableName + ";";
 		
 		return statement;
 	}
 	
-	public String update(T object){
-		return "";
+	public String update(T object, int id, String updateField, T updateValue){
+		tableName = ReflectInfo.getTableName(object);
+		
+		int fieldLength = ReflectInfo.getFieldLength(object);
+		
+		Field[] fields;
+		fields = object.getClass().getDeclaredFields();
+		String[] colNames = new String[fieldLength];
+		
+		for (int i= 0; i < fieldLength; i++) {
+			fields[i].setAccessible(true);
+			colNames[i] = fields[i].getAnnotation(Column.class).name();
+			fields[i].setAccessible(false);
+		}
+		
+		statement = "update "+ tableName+ " set " +updateField+ "= '" +updateValue+
+					"' where " +colNames[0]+ "= " +id+ ";";
+		
+		return statement;
 	}
 	
 }
