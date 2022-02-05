@@ -38,5 +38,4 @@ public class ReflectInfo {
 		return fieldValues;
 	}
 	
-	
 }

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class StatementCreator<T> {
 	
-	Connection conn = ConnectionFactory.getConnection();
+	//Connection conn = ConnectionFactory.getConnection();
 	public Class<T> table;
 	private T value;
 	private T object;
@@ -86,7 +86,7 @@ public class StatementCreator<T> {
 	}
 	
 	public String create(T object){
-		this.object = object;
+		//this.object = object;
 		tableName = ReflectInfo.getTableName(object);
 		
 		int fieldLength = ReflectInfo.getFieldLength(object);
@@ -131,7 +131,7 @@ public class StatementCreator<T> {
 	}
 	
 	public String read(T object){
-		this.object = object;
+		//this.object = object;
 		tableName = ReflectInfo.getTableName(object);
 		
 		String[] colNames = new String[ReflectInfo.getFieldLength(object)];
@@ -148,7 +148,7 @@ public class StatementCreator<T> {
 	}
 	
 	public String readAll(T object){
-		this.object = object;
+		//this.object = object;
 		tableName = ReflectInfo.getTableName(object);
 		
 		statement = "select * from " + tableName + ";";

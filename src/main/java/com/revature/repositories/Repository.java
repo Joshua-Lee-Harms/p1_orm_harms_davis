@@ -5,23 +5,34 @@ import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.sql.ResultSet.CONCUR_UPDATABLE;
+import static java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE;
+
 // Repository must be inherited by models
-public class Repository {
+public class Repository<T> {
 
 	Connection conn;// = ConnectionFactory.getConnection();
+	private Class<T> persistClass;
 
-	public Repository() {
-		this.conn = ConnectionFactory.getConnection();
+	public Repository(Connection conn) {
+		this.conn = conn;
 	}
+	
+	public Connection getConn(){ return conn; }
+	public void setConn(Connection conn){ this.conn = conn; }
+	public Repository(T pc){ this.persistClass = (Class<T>) pc; }
+	public Class<T> getPersistClass(){ return persistClass; }
 	
 	
 	// INITIALIZE TABLE
@@ -35,25 +46,23 @@ public class Repository {
 		PreparedStatement ps = conn.prepareStatement(sql);
 		ps.executeUpdate();
 	}
-
-	// should this be Object or T ???
+	
 	public Object addItem(Object o) {
 		//String sql = "INSERT INTO entity VALUES (default,?,?,?) RETURNING *";
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.create(o);
-		//System.out.println(sql);
 
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Object[] fieldValues = ReflectInfo.getFieldValues(o);
-
+			
 			for (int i=0; i < ReflectInfo.getFieldLength(o) - 1; i++){
 				//System.out.println( fieldValues[i] +":\t"+  fieldValues[i].getClass().getSimpleName() );
 				ps.setObject(i+1, fieldValues[i+1]);
 			}
 			//ps.setString(1, entity.getName());
 			ResultSet rs = ps.executeQuery();
-
+			
 			if (rs.next()) return buildItem(rs, o);
 		}
 		catch (SQLException | IllegalAccessException e) {
@@ -81,50 +90,43 @@ public class Repository {
 		}
 		return null;
 	}
-
-	/*Fixme - Must Return List of the Class type passed in, should be a way to pass enough info in through the param
-	* Fixme - via reflection to reconstruct a list of concrete objects from the stream of column data
-	* Fixme -
-	* Fixme -	Return List<Object> ?
-	* Fixme -
-	*/
+	
 	// <? extends Connection> OR <? extends Repository>
-	public Object getAll(Object o, Connection c) throws InstantiationException, IllegalAccessException {
-
-		//Object obj = clazz.newInstance();	//
-
-		StatementCreator<Object> sc = new StatementCreator<>();
+	public Object getAll(Object o) throws InstantiationException, IllegalAccessException {
 		
-		// POSSIBLY PASSING IN WRONG INSTANCE/VALUE. RS.NEXT() NOT LOOPING
+		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.readAll(o);
-
+		
+		
 		try {
-			PreparedStatement ps = conn.prepareStatement(sql);
+			
+			PreparedStatement ps = conn.prepareStatement(sql, TYPE_SCROLL_INSENSITIVE, CONCUR_UPDATABLE);
+			//PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
+			//Statement st = conn.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_UPDATABLE);
+			//ResultSet rs = st.executeQuery(sql);
 			ResultSetMetaData md = rs.getMetaData();
 			int colCount = md.getColumnCount();
 			
-			Class[] params = new Class[colCount];
+			Class<?>[] params = new Class[colCount];
 			List<Object> data = new LinkedList<>();
-			//int numFields = clazz.getDeclaredFields().length;
+			List<Object> objects = new LinkedList<>();
 			
-			while (rs.next()) {
+			//System.out.println(rs.last() +":\t" +rs.getRow());
+			//rs.beforeFirst();
+			while(rs.next()) {
 				for (int i = 1; i <= colCount; i++) {
-					params[i-1] =  rs.getObject(i).getClass() ; // class java.lang.Integer ...
-					
-					data.add(  rs.getObject(i)  );
-					
+					params[i-1] =  rs.getObject(i).getClass();
+					data.add( rs.getObject(i) );
 				}
-				// need to convert params to primitive type classes
-				//System.out.println(Arrays.toString(params));
+				objects.add( buildItem(rs, o) );
+				System.out.println(objects);
+				
+				// !!!!! need to convert params to primitive type classes !!!!!
 				Constructor<?> constructor = o.getClass().getConstructor( params );
 				return constructor.newInstance(data.toArray());
-				//data.add(buildItem(rs, c));
 			}
-			//System.out.println("data:\t" + data );
-
 			//return data;
-
 		} catch (
 				SQLException | InvocationTargetException | NoSuchMethodException e) {
 			e.printStackTrace();

@@ -15,7 +15,8 @@ public class testing {
 	public static void main(String[] args) throws ResourceNotFoundException {
 		
 		// Entity no longer inherits Repository
-		Repository repo = new Repository();
+		Connection conn = ConnectionFactory.getConnection();
+		Repository repo = new Repository(conn);
 		
 		Entity entity = new Entity();
 		entity.setId(1);
@@ -31,23 +32,24 @@ public class testing {
 		
 		repo.addItem(entity);
 		
-		entity.setId(2);
-		entity.setName("name2");
-		entity.setSomeNum(2.2);
-		entity.setOtherNum(22);
-		repo.addItem(entity);
+		Entity e2 = new Entity();
+		e2.setId(2);
+		e2.setName("name2");
+		e2.setSomeNum(2.2);
+		e2.setOtherNum(22);
+		 repo.addItem(e2);
 		
-		//System.out.println("get 1:\t"+ repo.getItem(1, entity) +"\n");
+		//System.out.println("get 2:\t"+ repo.getItem(2, entity) +"\n");
 		try {
-			System.out.println("getAll:\t"+ repo.getAll( entity, ConnectionFactory.getConnection() ));
+			//System.out.println("getAll:\t"+ repo.getAll( entity, ConnectionFactory.getConnection() ));
+			repo.getAll(e2);
+			
 		} catch (InstantiationException | IllegalAccessException | NullPointerException e) {
 			e.printStackTrace();
 		} finally {
-			repo.deleteItem(1, entity);
-			repo.deleteItem(2, entity);
+			//repo.deleteItem(1, entity);
+			//repo.deleteItem(2, entity);
 		}
-		
-		
 		
 		// tests for Repository class. works for adding things to postgres
 		//Repository<Entity> repo = new Repository();
