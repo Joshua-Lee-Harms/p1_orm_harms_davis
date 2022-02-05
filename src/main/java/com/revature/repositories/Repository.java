@@ -7,18 +7,11 @@ import com.revature.services.StatementCreator;
 import com.revature.util.ConnectionFactory;
 import com.revature.util.ReflectInfo;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.sql.*;
 import java.util.*;
 
-import static java.sql.ResultSet.CONCUR_UPDATABLE;
-import static java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE;
 
-// Repository must be inherited by models
 public class Repository<T> {
 
 	Connection conn = ConnectionFactory.getConnection();
