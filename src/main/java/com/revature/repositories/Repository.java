@@ -19,7 +19,7 @@ public class Repository<T> {
 	public Repository(){}
 	
 	// INITIALIZE TABLE
-	public void initializeTable(Object o) throws SQLException, MissingAnnotationException {
+	public void initializeTable(T o) throws SQLException, MissingAnnotationException {
 		PreparedStatement drop = conn.prepareStatement("drop table if exists " +ReflectInfo.getTableName(o)+ ";");
 		drop.executeUpdate();
 		
@@ -30,7 +30,7 @@ public class Repository<T> {
 		ps.executeUpdate();
 	}
 	
-	public Object addItem(Object o) {
+	public Object addItem(T o) {
 		
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.create(o);
@@ -52,7 +52,7 @@ public class Repository<T> {
 		return null;
 	}
 
-	public Object getItem(int id,Object o) {
+	public Object getItem(int id,T o) {
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.read(o);
 
@@ -72,7 +72,7 @@ public class Repository<T> {
 		return null;
 	}
 	
-	public Object getAll(Object o) throws InstantiationException, IllegalAccessException {
+	public Object getAll(T o) throws InstantiationException, IllegalAccessException {
 		
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.readAll(o);
@@ -94,7 +94,7 @@ public class Repository<T> {
 		return null;
 	}
 
-	public void deleteItem(int id, Object o) {
+	public void deleteItem(int id, T o) {
 		StatementCreator<Object> sc = new StatementCreator<>();
 		String sql = sc.delete(o);
 
@@ -110,7 +110,7 @@ public class Repository<T> {
 		}
 	}
 	
-	public void update(Object object, int id, String updateField, T updateValue) throws ResourceNotFoundException {
+	public void update(T object, int id, String updateField, T updateValue) throws ResourceNotFoundException {
 		StatementCreator<Object> sc = new StatementCreator<>();
 		// this.updatingField =updatingField.getAnnotation(Column.class).columnName();
 		Field[] fields = object.getClass().getDeclaredFields();
@@ -139,7 +139,7 @@ public class Repository<T> {
 	}
 
 	// Helper Methods
-	private Object buildItem(ResultSet rs, Object o) throws SQLException, IllegalAccessException, InstantiationException {
+	private Object buildItem(ResultSet rs, T o) throws SQLException, IllegalAccessException, InstantiationException {
 		
 		Field[] fields = o.getClass().getDeclaredFields();
 		Object ob2 = o.getClass().newInstance();
