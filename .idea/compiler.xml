@@ -7,8 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="project1" />
-        <module name="p1_orm_harms_davis" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="p1_orm_harms_davis" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
