@@ -34,6 +34,7 @@ public class ConnectionFactory {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Connection established successfully\n");
 		return connection;
 	}
 	
