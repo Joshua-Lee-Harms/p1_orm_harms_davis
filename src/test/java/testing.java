@@ -1,9 +1,12 @@
 
+import com.revature.Driver;
 import com.revature.exceptions.MissingAnnotationException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.repositories.Repository;
 import com.revature.services.StatementCreator;
+import com.revature.util.ConnectionFactory;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -48,8 +51,18 @@ public class testing {
 			//repo.deleteItem(2, tm);
 		}
 		
-		repo.update(tm, 1, "name", "anthony");
-		repo.update(tm, 1, "other_num", 55) ;
+		TestModel up = new TestModel();
+		up.setId(1);
+		up.setName("Anthony");
+		up.setSomeNum(5.55);
+		up.setOtherNum(55);
+		try {
+			repo.update(up.getId(), up);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		//repo.update(tm, 1, "name", "anthony");
+		//repo.update(tm, 1, "other_num", 55) ;
 		// tests for Repository class. works for adding things to postgres
 		//Repository<Entity> repo = new Repository();
 		//repo.addItem(tm);

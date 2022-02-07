@@ -110,23 +110,21 @@ public class Repository<T> {
 		}
 	}
 	
-	public void update(T object, int id, String updateField, T updateValue) throws ResourceNotFoundException {
+	public void update( int id, T newObject) throws IllegalAccessException {
+		
 		StatementCreator<Object> sc = new StatementCreator<>();
-		// this.updatingField =updatingField.getAnnotation(Column.class).columnName();
-		Field[] fields = object.getClass().getDeclaredFields();
-		//String[] colNames = new String[ReflectInfo.getFieldLength(object)];
+		Field[] fields = newObject.getClass().getDeclaredFields();
 		List<String> colNames = new LinkedList<>();
+		
 		String sql;
 		
-		for (int i= 0; i < ReflectInfo.getFieldLength(object); i++) {
+		for (int i= 0; i < ReflectInfo.getFieldLength(newObject); i++) {
 			fields[i].setAccessible(true);
 			colNames.add(fields[i].getAnnotation(Column.class).name());
 			fields[i].setAccessible(false);
 		}
-		if (colNames.contains(updateField))
-			sql = sc.update(object, id, updateField, updateValue);
-		else
-			throw new ResourceNotFoundException("Column/Field not found");
+		
+		sql = sc.update(id, newObject);
 		
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);

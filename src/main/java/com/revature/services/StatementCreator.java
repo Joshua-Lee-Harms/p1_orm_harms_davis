@@ -4,9 +4,11 @@ import com.revature.annotations.Column;
 import com.revature.annotations.ForeignKey;
 import com.revature.annotations.Table;
 import com.revature.exceptions.MissingAnnotationException;
+import com.revature.repositories.Repository;
 import com.revature.util.ReflectInfo;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,24 +143,35 @@ public class StatementCreator<T> {
 		return statement;
 	}
 	
-	public String update(T object, int id, String updateField, T updateValue){
-		tableName = ReflectInfo.getTableName(object);
+	public String update(int id, T newObject) throws IllegalAccessException {
 		
-		int fieldLength = ReflectInfo.getFieldLength(object);
+		tableName = ReflectInfo.getTableName(newObject);
+		int fieldLength = ReflectInfo.getFieldLength(newObject);
 		
-		Field[] fields;
-		fields = object.getClass().getDeclaredFields();
+		Field[] fields = newObject.getClass().getDeclaredFields();
 		String[] colNames = new String[fieldLength];
+		Object[] fieldValues = ReflectInfo.getFieldValues(newObject);
+		String type;
+		
+		statement = "update "+ tableName+ " set ";
 		
 		for (int i= 0; i < fieldLength; i++) {
 			fields[i].setAccessible(true);
 			colNames[i] = fields[i].getAnnotation(Column.class).name();
-			fields[i].setAccessible(false);
+			type = fields[i].getType().getSimpleName();
+			
+			if (i != 0) {
+				if (type.equalsIgnoreCase("string"))
+					statement += colNames[i] + "= '" + fieldValues[i] + "',";
+				else
+					statement += colNames[i] + "= " + fieldValues[i] + ",";
+				fields[i].setAccessible(false);
+			}
 		}
 		
-		statement = "update "+ tableName+ " set " +updateField+ "= '" +updateValue+
-					"' where " +colNames[0]+ "= " +id+ ";";
-		
+		statement = statement.substring(0, statement.length()-1) +"";
+		statement += " where " +colNames[0]+ "= " +id+ ";";
+		System.out.println(statement);
 		return statement;
 	}
 	

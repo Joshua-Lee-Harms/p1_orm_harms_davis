@@ -1,11 +1,12 @@
 package com.revature.util;
 
+import com.revature.annotations.Column;
 import com.revature.annotations.Table;
 import java.lang.reflect.Field;
 
 public class ReflectInfo {
 	
-	ReflectInfo(){}
+	private ReflectInfo(){}
 	
 	public static String getTableName(Object o){
 		return o.getClass().getAnnotation(Table.class).tableName();
