@@ -171,7 +171,7 @@ public class StatementCreator<T> {
 		
 		statement = statement.substring(0, statement.length()-1) +"";
 		statement += " where " +colNames[0]+ "= " +id+ ";";
-		System.out.println(statement);
+		
 		return statement;
 	}
 	
