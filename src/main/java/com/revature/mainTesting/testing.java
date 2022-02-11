@@ -1,7 +1,9 @@
+package com.revature.mainTesting;
 
 import com.revature.exceptions.MissingAnnotationException;
 import com.revature.exceptions.ResourceNotFoundException;
 import com.revature.repositories.Repository;
+import com.revature.util.TestModel;
 
 import java.sql.SQLException;
 
@@ -10,7 +12,7 @@ public class testing {
 	public static void main(String[] args) throws ResourceNotFoundException {
 		
 		// Entity no longer inherits Repository
-		Repository<Object> repo = new Repository();
+		Repository<Object> repo = new Repository<>();
 		
 		TestModel tm = new TestModel();
 		tm.setId(1);

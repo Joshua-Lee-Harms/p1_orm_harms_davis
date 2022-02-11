@@ -1,5 +1,3 @@
-
-
 import com.revature.annotations.Column;
 import com.revature.annotations.Table;
 import com.revature.util.SqlDataType;

@@ -9,9 +9,5 @@
         <module name="orm_p1" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="p1_orm" target="8" />
-      <module name="p1_orm_harms_davis" target="8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
